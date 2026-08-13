@@ -1,0 +1,47 @@
+stages:
+  - build
+  - clang
+  - test
+  - deploy
+  - notify
+
+build-job:
+  stage: build
+  script:
+    - cd src/cat
+    - make all
+    - cd ../grep
+    - make all
+  artifacts:
+    paths:
+      - src/cat/s21_cat
+      - src/grep/s21_grep
+    expire_in: 30d
+
+clang-format-job:
+  stage: clang
+  script:
+    - sh src/check_style.sh
+
+test-job:
+  stage: test
+  script:
+    - bash src/cat/test.sh
+    - bash src/grep/test.sh
+  dependencies:
+    - build-job
+  allow_failure: false
+
+deploy-job:
+  stage: deploy
+  script:
+    - bash src/deploy.sh
+  dependencies:
+    - build-job
+  when: manual
+
+notify-job:
+  stage: notify
+  script:
+    - bash src/notify.sh "SUCCESS"
+  when: manual
