@@ -1,0 +1,7 @@
+another text
+
+third string after void
+new string
+
+
+some words after 2 voids	and tab for the ending
